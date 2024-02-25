@@ -2,59 +2,45 @@ package org.nikolchev98.simpleafk.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.nikolchev98.simpleafk.models.PlayerAFKData;
+import org.nikolchev98.simpleafk.models.PlayerAFKDataContainer;
 
-import java.util.HashMap;
-import java.util.stream.Collectors;
+import static org.nikolchev98.simpleafk.enums.Constants.IS_NOW_AFK_FORMAT;
+import static org.nikolchev98.simpleafk.enums.Constants.NO_LONGER_AFK_FORMAT;
 
-import static org.nikolchev98.simpleafk.enums.Constants.*;
-
-public class AfkUtils {
-    private static final HashMap<Player, Long> lastMovement = new HashMap<>();
-
-    public static void addPlayerToMap(Player player) {
-        lastMovement.put(player, System.currentTimeMillis());
+public class AFKUtils {
+    protected static final PlayerAFKDataContainer playerAFKDataContainer = PlayerAFKDataContainer.getInstance();
+    public static void addPlayer(Player player) {
+        PlayerAFKData currentPlayerData = new PlayerAFKData(player.getName(), System.currentTimeMillis(), false);
+        playerAFKDataContainer.addData(currentPlayerData);
     }
 
-    public static void removePlayerFromMap(Player player) {
-        lastMovement.remove(player);
+    public static void removePlayer(Player player) {
+        playerAFKDataContainer.removeData(player);
     }
 
     public static void registerPlayerActivity(Player player) {
-        if (isAFK(player)) {
+        if (playerAFKDataContainer.isAFK(player)) {
+            playerAFKDataContainer.setAFK(false, player);
             broadcastNotAFK(player);
         }
-        lastMovement.replace(player, System.currentTimeMillis());
-    }
-
-    public static boolean isAFK(Player player) {
-        Long lastMovementTime = lastMovement.get(player);
-        Long currentTime = System.currentTimeMillis();
-        return currentTime - lastMovementTime >= AFK_TRIGGER_MILLISECONDS;
+        playerAFKDataContainer.setTimer(System.currentTimeMillis(), player);
     }
 
     public static void triggerAFK(Player player) {
-        if (!isAFK(player)) {
-            lastMovement.replace(player, AFK_TRIGGER_MILLISECONDS);
+        if (!playerAFKDataContainer.isAFK(player)) {
             broadcastIsAFK(player);
-            return;
+        } else {
+            broadcastNotAFK(player);
         }
-
-        lastMovement.replace(player, System.currentTimeMillis());
-        broadcastNotAFK(player);
+        playerAFKDataContainer.switchAFK(player);
     }
 
-    public static String getAllAFKPlayersFormatted() {
-        return String.format(CURRENTLY_AFK_FORMAT, lastMovement.keySet().stream()
-                .filter(AfkUtils::isAFK)
-                .map(Player::getName)
-                .collect(Collectors.joining(", ")));
-    }
-
-    private static void broadcastIsAFK(Player player) {
+    public static void broadcastIsAFK(Player player) {
         Bukkit.broadcastMessage(String.format(IS_NOW_AFK_FORMAT, player.getName()));
     }
 
-    private static void broadcastNotAFK(Player player) {
+    public static void broadcastNotAFK(Player player) {
         Bukkit.broadcastMessage(String.format(NO_LONGER_AFK_FORMAT, player.getName()));
     }
 }

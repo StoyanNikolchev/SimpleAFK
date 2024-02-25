@@ -6,30 +6,30 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import static org.nikolchev98.simpleafk.utils.AfkUtils.*;
+import org.nikolchev98.simpleafk.models.PlayerAFKDataContainer;
+import org.nikolchev98.simpleafk.utils.AFKUtils;
 
 public class AFKListener implements Listener {
+    private final PlayerAFKDataContainer playerAFKDataContainer = PlayerAFKDataContainer.getInstance();
 
-    //Automatically sends a player a list of all the AFK players upon joining the server.
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        addPlayerToMap(e.getPlayer());
-        e.getPlayer().sendMessage(getAllAFKPlayersFormatted());
+        AFKUtils.addPlayer(e.getPlayer());
+        e.getPlayer().sendMessage(this.playerAFKDataContainer.getAllAFKFormatted());
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-        removePlayerFromMap(e.getPlayer());
+        AFKUtils.removePlayer(e.getPlayer());
     }
 
     @EventHandler
     public void onPlayerMovement(PlayerMoveEvent e) {
-        registerPlayerActivity(e.getPlayer());
+        AFKUtils.registerPlayerActivity(e.getPlayer());
     }
 
     @EventHandler
     public void onPlayerChat(AsyncChatEvent e) {
-        registerPlayerActivity(e.getPlayer());
+        AFKUtils.registerPlayerActivity(e.getPlayer());
     }
 }

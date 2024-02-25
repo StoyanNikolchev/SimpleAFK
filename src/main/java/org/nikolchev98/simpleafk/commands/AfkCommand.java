@@ -6,54 +6,53 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.nikolchev98.simpleafk.models.PlayerAFKDataContainer;
+import org.nikolchev98.simpleafk.utils.AFKUtils;
 
 import static org.nikolchev98.simpleafk.enums.Constants.*;
-import static org.nikolchev98.simpleafk.utils.AfkUtils.*;
 
 public class AfkCommand implements CommandExecutor {
+    private final PlayerAFKDataContainer playerAFKDataContainer = PlayerAFKDataContainer.getInstance();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        //Prevents the console from AFK-ing itself.
+
         if (!(sender instanceof Player) && args.length == 0) {
             return true;
-        }
 
-        //Triggers AFK for the sender
-        if (args.length == 0) {
+        } else if (args.length == 0) {
             Player player = (Player) sender;
-            triggerAFK(player);
+            AFKUtils.triggerAFK(player);
             return true;
-        }
 
-        if (args.length == 1) {
+        } else if (args.length == 1) {
             String argument = args[0];
 
-            //Shows the sender all AFK players.
+            //Shows a list of all AFK players
             if (argument.equalsIgnoreCase("all")) {
-                sender.sendMessage(getAllAFKPlayersFormatted());
+                sender.sendMessage(this.playerAFKDataContainer.getAllAFKFormatted());
                 return true;
+
+            } else {
+                Player targetPlayer = Bukkit.getPlayer(argument);
+
+                if (targetPlayer == null) {
+                    sender.sendMessage(NO_SUCH_PLAYER);
+                    return true;
+
+                } else if (this.playerAFKDataContainer.isAFK(targetPlayer)) {
+                    sender.sendMessage(String.format(String.format(IS_AFK_FORMAT, argument)));
+                    return true;
+
+                } else {
+                    sender.sendMessage(String.format(String.format(IS_NOT_AFK, argument)));
+                    return true;
+                }
             }
 
-            Player targetPlayer = Bukkit.getPlayer(argument);
-            if (targetPlayer == null) {
-                sender.sendMessage("No such player online!");
-                return true;
-            }
-
-            if (isAFK(targetPlayer)) {
-                sender.sendMessage(String.format(IS_AFK_FORMAT, argument));
-                return true;
-            }
-
-            sender.sendMessage(String.format(IS_NOT_AFK, argument));
+        } else {
+            sender.sendMessage(INVALID_COMMAND);
             return true;
         }
-
-        //Invalid command if the arguments > 1
-        sender.sendMessage("Invalid command structure.");
-        return true;
     }
-
-
 }
