@@ -1,0 +1,8 @@
+name: SimpleAFK
+version: '${project.version}'
+main: org.nikolchev98.simpleafk.SimpleAFK
+api-version: '1.20'
+commands:
+  afk:
+    description: Marks a player as AFK
+    usage: /<command>
