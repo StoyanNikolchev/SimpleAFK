@@ -6,3 +6,6 @@ commands:
   afk:
     description: Marks a player as AFK
     usage: /<command>
+  trigger_afk_messages:
+    description: Enables/disables AFK messages
+    usage: /<command>

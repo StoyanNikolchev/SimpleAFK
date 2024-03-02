@@ -69,6 +69,10 @@ public class PlayerAFKDataContainer {
         this.getPlayerData(player).setTime(milliseconds);
     }
 
+    public boolean isEmpty() {
+        return getAllAFKFormatted().equals(String.format(LIST_OF_AFK_FORMAT, ""));
+    }
+
     public String getAllAFKFormatted() {
         return String.format(LIST_OF_AFK_FORMAT,
                 this.playerData.stream()
