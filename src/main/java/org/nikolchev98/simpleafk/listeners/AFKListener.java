@@ -16,18 +16,13 @@ import java.sql.SQLException;
 import static org.nikolchev98.simpleafk.enums.Constants.FAILED_TO_ADD_PLAYER;
 
 public class AFKListener implements Listener {
-    private final SimpleAFK simpleAFK;
     private final PlayerAFKDataContainer playerAFKDataContainer = PlayerAFKDataContainer.getInstance();
-
-    public AFKListener(SimpleAFK simpleAFK) {
-        this.simpleAFK = simpleAFK;
-    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
 
         try {
-            this.simpleAFK.getAfkDatabase().addPlayer(e.getPlayer());
+            SimpleAFK.getInstance().getAfkDatabase().addPlayer(e.getPlayer());
         } catch (SQLException exception) {
             System.out.println(ChatColor.RED + FAILED_TO_ADD_PLAYER);
         }

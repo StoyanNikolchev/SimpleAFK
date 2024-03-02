@@ -13,11 +13,6 @@ import java.sql.SQLException;
 import static org.nikolchev98.simpleafk.enums.Constants.*;
 
 public class TriggerMessagesCommand implements CommandExecutor {
-    private final SimpleAFK simpleAFK;
-
-    public TriggerMessagesCommand(SimpleAFK simpleAFK) {
-        this.simpleAFK = simpleAFK;
-    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
@@ -28,7 +23,7 @@ public class TriggerMessagesCommand implements CommandExecutor {
 
         Player player = (Player) commandSender;
         try {
-            if (this.simpleAFK.getAfkDatabase().triggerPlayerMessages(player)) {
+            if (SimpleAFK.getInstance().getAfkDatabase().triggerPlayerMessages(player)) {
                 player.sendMessage(String.format(ENABLED_MESSAGES_FORMAT, ChatColor.GREEN));
             } else {
                 player.sendMessage(String.format(DISABLED_MESSAGES_FORMAT, ChatColor.RED));

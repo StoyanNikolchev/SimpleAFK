@@ -12,7 +12,7 @@ import java.sql.SQLException;
 
 public final class SimpleAFK extends JavaPlugin {
     private AFKDatabase afkDatabase;
-    public static SimpleAFK instance;
+    private static SimpleAFK instance;
 
     public AFKDatabase getAfkDatabase() {
         return this.afkDatabase;
@@ -37,8 +37,8 @@ public final class SimpleAFK extends JavaPlugin {
         System.out.println("SimpleAFK is enabled!");
         new AFKCheckTask().runTaskTimer(this, 20L, 1L);
         this.getCommand("afk").setExecutor(new AfkCommand());
-        this.getCommand("trigger_afk_messages").setExecutor(new TriggerMessagesCommand(this));
-        this.getServer().getPluginManager().registerEvents(new AFKListener(this), this);
+        this.getCommand("trigger_afk_messages").setExecutor(new TriggerMessagesCommand());
+        this.getServer().getPluginManager().registerEvents(new AFKListener(), this);
     }
 
     public void onDisable() {
